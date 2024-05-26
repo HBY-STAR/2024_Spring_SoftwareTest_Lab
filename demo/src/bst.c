@@ -112,6 +112,8 @@ struct TreeNode* deleteNode(struct TreeNode* root, int key) {
 }
 
 int main(int argc, char **argv) {
+    klee_make_symbolic(argc, sizeof(int), "argc");
+    klee_make_symbolic(argv, argc * sizeof(char *), "argv");
     struct BST *tree = malloc(sizeof(struct BST));
 
     for (int i = 1; i < argc; i++) {
