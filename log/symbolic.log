@@ -23,6 +23,9 @@ object 2: hex : 0x00000000
 object 2: int : 0
 object 2: uint: 0
 object 2: text: ....
+
+
+
 --------------------------------------------------
 --------------------------------------------------
 ktest file : 'bc/klee-out-0/test000002.ktest'
@@ -49,6 +52,9 @@ object 2: hex : 0x00000000
 object 2: int : 0
 object 2: uint: 0
 object 2: text: ....
+
+
+
 --------------------------------------------------
 --------------------------------------------------
 ktest file : 'bc/klee-out-0/test000003.ktest'
@@ -82,6 +88,9 @@ object 3: hex : 0x0000000000000000
 object 3: int : 0
 object 3: uint: 0
 object 3: text: ........
+
+Segmentation fault
+
 --------------------------------------------------
 --------------------------------------------------
 ktest file : 'bc/klee-out-0/test000004.ktest'
@@ -115,6 +124,9 @@ object 3: hex : 0x0101010101010101
 object 3: int : 72340172838076673
 object 3: uint: 72340172838076673
 object 3: text: ........
+
+Segmentation fault
+
 --------------------------------------------------
 --------------------------------------------------
 ktest file : 'bc/klee-out-0/test000005.ktest'
@@ -148,6 +160,9 @@ object 3: hex : 0xe0167a5e9e7f0000
 object 3: int : 140318166619872
 object 3: uint: 140318166619872
 object 3: text: ..z^....
+
+Segmentation fault
+
 --------------------------------------------------
 --------------------------------------------------
 ktest file : 'bc/klee-out-0/test000006.ktest'
@@ -181,4 +196,7 @@ object 3: hex : 0x00a98b54a4550000
 object 3: int : 94164281436416
 object 3: uint: 94164281436416
 object 3: text: ...T.U..
+
+Segmentation fault
+
 --------------------------------------------------
