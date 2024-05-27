@@ -14,8 +14,19 @@ cd demo && make all
 
 /home/klee/klee_build/bin/klee bc/symbolic.bc
 /home/klee/klee_build/bin/klee bc/maze.bc
-/home/klee/klee_build/bin/klee -posix-runtime  bc/bst.bc -sym-args 0 10 11 
 /home/klee/klee_build/bin/klee bc/bst.bc
+
+export LD_LIBRARY_PATH=/home/klee/klee_build/lib/:$LD_LIBRARY_PATH
+gcc -L /home/klee/klee_build/lib/ src/symbolic.c -lkleeRuntest
+
+for i in {1..6}; do
+    echo "--------------------------------------------------"  | tee -a symbolic.log
+    ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
+    /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a symbolic.log
+    KTEST_FILE="/home/klee/demo/$ktest_file" ./a.out  | tee -a symbolic.log
+    echo "--------------------------------------------------"  | tee -a symbolic.log
+done
+
 
 export LD_LIBRARY_PATH=/home/klee/klee_build/lib/:$LD_LIBRARY_PATH
 gcc -L /home/klee/klee_build/lib/ src/maze.c -lkleeRuntest
@@ -61,7 +72,7 @@ for i in {1..1638}; do
 done
 
 # add null and rm atoi and change del
-for i in {1..474}; do
+for i in {1..161}; do
     echo "--------------------------------------------------"  | tee -a bst_add_null_rm_atoi_change_del.log
     ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
     /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a bst_add_null_rm_atoi_change_del.log
