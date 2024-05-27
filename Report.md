@@ -9,25 +9,64 @@
 docker build -t kawaii .
 docker run --name klee -p 35022:22 -itd kawaii
 docker exec -it klee bash
-sudo ln -s /home/klee/klee_build/bin/klee /usr/local/bin/klee
 sudo su
 cd demo && make all
 
-klee bc/symbolic.bc
-klee bc/maze.bc
-klee bc/bst.bc
+/home/klee/klee_build/bin/klee bc/symbolic.bc
+/home/klee/klee_build/bin/klee bc/maze.bc
+/home/klee/klee_build/bin/klee -posix-runtime  bc/bst.bc -sym-args 0 10 11 
+/home/klee/klee_build/bin/klee bc/bst.bc
 
 export LD_LIBRARY_PATH=/home/klee/klee_build/lib/:$LD_LIBRARY_PATH
 gcc -L /home/klee/klee_build/lib/ src/maze.c -lkleeRuntest
-/home/klee/klee_build/bin/ktest-tool bc/klee-out-0/test000001.ktest
-KTEST_FILE=/home/klee/demo/bc/klee-out-0/test000001.ktest ./a.out
 
 for i in {1..309}; do
-    echo "--------------------------------------------------"
+    echo "--------------------------------------------------"  | tee -a maze.log
     ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
-    /home/klee/klee_build/bin/ktest-tool "$ktest_file"
-    KTEST_FILE="/home/klee/demo/$ktest_file" ./a.out
-    echo "--------------------------------------------------"
+    /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a maze.log
+    KTEST_FILE="/home/klee/demo/$ktest_file" ./a.out  | tee -a maze.log
+    echo "--------------------------------------------------"  | tee -a maze.log
+done
+
+
+export LD_LIBRARY_PATH=/home/klee/klee_build/lib/:$LD_LIBRARY_PATH
+gcc -L /home/klee/klee_build/lib/ src/bst.c -lkleeRuntest
+
+KTEST_FILE="/home/klee/demo/bc/klee-out-0/test000001.ktest" ./a.out
+
+# origin
+for i in {1..10}; do
+    echo "--------------------------------------------------"  | tee -a bst_origin.log
+    ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
+    /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a bst_origin.log
+    echo "--------------------------------------------------"  | tee -a bst_origin.log
+done
+
+# add null
+for i in {1..10}; do
+    echo "--------------------------------------------------"  | tee -a bst_add_null.log
+    ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
+    /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a bst_add_null.log
+    KTEST_FILE="/home/klee/demo/$ktest_file" ./a.out  | tee -a bst_add_null.log
+    echo "--------------------------------------------------"  | tee -a bst_add_null.log
+done
+
+# add null and rm atoi
+for i in {1..1638}; do
+    echo "--------------------------------------------------"  | tee -a bst_add_null_rm_atoi.log
+    ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
+    /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a bst_add_null_rm_atoi.log
+    KTEST_FILE="/home/klee/demo/$ktest_file" ./a.out  | tee -a bst_add_null_rm_atoi.log
+    echo "--------------------------------------------------"  | tee -a bst_add_null_rm_atoi.log
+done
+
+# add null and rm atoi and change del
+for i in {1..474}; do
+    echo "--------------------------------------------------"  | tee -a bst_add_null_rm_atoi_change_del.log
+    ktest_file="bc/klee-out-0/test$(printf "%06d" $i).ktest"
+    /home/klee/klee_build/bin/ktest-tool "$ktest_file"  | tee -a bst_add_null_rm_atoi_change_del.log
+    KTEST_FILE="/home/klee/demo/$ktest_file" ./a.out  | tee -a bst_add_null_rm_atoi_change_del.log
+    echo "--------------------------------------------------"  | tee -a bst_add_null_rm_atoi_change_del.log
 done
 
 ```
@@ -246,5 +285,10 @@ object 3: text: ....dU..
 * 生成 klee-out-0 ，其中包含了 309 个测试用例，如下：
 
 ```shell
+```
+
+
+## 3. bst.c
+
 
 

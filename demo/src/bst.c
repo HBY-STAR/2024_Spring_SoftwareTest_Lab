@@ -4,29 +4,29 @@
 
 struct TreeNode {
     int val;
-    struct TreeNode* left;
-    struct TreeNode* right;
+    struct TreeNode *left;
+    struct TreeNode *right;
 };
 
 struct BST {
-    struct TreeNode* root;
+    struct TreeNode *root;
 };
 
-struct TreeNode* createNode(int _val) {
-    struct TreeNode* newNode = (struct TreeNode*) malloc(sizeof(struct TreeNode));
+struct TreeNode *createNode(int _val) {
+    struct TreeNode *newNode = (struct TreeNode *) malloc(sizeof(struct TreeNode));
     newNode->val = _val;
     newNode->left = NULL;
     newNode->right = NULL;
     return newNode;
 }
 
-void insert(struct BST* tree, int val) {
+void insert(struct BST *tree, int val) {
     if (tree->root == NULL) {
         tree->root = createNode(val);
         return;
     }
 
-    struct TreeNode* node = tree->root;
+    struct TreeNode *node = tree->root;
     while (node != NULL) {
         if (val < node->val) {
             if (node->left == NULL) {
@@ -46,8 +46,8 @@ void insert(struct BST* tree, int val) {
     }
 }
 
-int search(struct BST* tree, int val) {
-    struct TreeNode* node = tree->root;
+int search(struct BST *tree, int val) {
+    struct TreeNode *node = tree->root;
     while (node != NULL) {
         if (val == node->val) {
             return 1;
@@ -60,7 +60,7 @@ int search(struct BST* tree, int val) {
     return 0;
 }
 
-void inorderTraversal(struct TreeNode* node) {
+void inorderTraversal(struct TreeNode *node) {
     if (node == NULL) {
         return;
     }
@@ -69,19 +69,19 @@ void inorderTraversal(struct TreeNode* node) {
     inorderTraversal(node->right);
 }
 
-void printInorder(struct BST* tree) {
+void printInorder(struct BST *tree) {
     inorderTraversal(tree->root);
 }
 
-struct TreeNode* minValueNode(struct TreeNode* node) {
-    struct TreeNode* current = node;
+struct TreeNode *minValueNode(struct TreeNode *node) {
+    struct TreeNode *current = node;
     while (current != NULL && current->left != NULL) {
         current = current->left;
     }
     return current;
 }
 
-struct TreeNode* deleteNode(struct TreeNode* root, int key) {
+struct TreeNode *deleteNode(struct TreeNode *root, int key) {
     if (root == NULL) {
         return NULL;
     }
@@ -95,15 +95,15 @@ struct TreeNode* deleteNode(struct TreeNode* root, int key) {
             free(root);
             return NULL;
         } else if (root->left == NULL) {
-            struct TreeNode* temp = root->right;
+            struct TreeNode *temp = root->right;
             free(root);
             return temp;
         } else if (root->right == NULL) {
-            struct TreeNode* temp = root->left;
+            struct TreeNode *temp = root->left;
             free(root);
             return temp;
         } else {
-            struct TreeNode* temp = minValueNode(root->right);
+            struct TreeNode *temp = minValueNode(root->right);
             root->val = temp->val;
             root->right = deleteNode(root->right, temp->val);
         }
@@ -111,13 +111,31 @@ struct TreeNode* deleteNode(struct TreeNode* root, int key) {
     return root;
 }
 
-int main(int argc, char **argv) {
-    klee_make_symbolic(argc, sizeof(int), "argc");
-    klee_make_symbolic(argv, argc * sizeof(char *), "argv");
-    struct BST *tree = malloc(sizeof(struct BST));
+int main() {
+    int argc = 1;
+    const int max_argc = 11; // 设置一个合理的最大值
+    char *argv[max_argc];
+    for (int i = 0; i < max_argc; i++) {
+        argv[i] = malloc(11);
+    }
+    klee_make_symbolic(&argc, sizeof(argc), "argc");
+    klee_assume(argc >= 1);
+    klee_assume(argc <= 10);
+
 
     for (int i = 1; i < argc; i++) {
-        int insertVal = atoi(argv[i]);
+        char name[20];
+        sprintf(name, "argv%d", i);
+        klee_make_symbolic(argv[i], 11, name);
+    }
+
+
+    struct BST *tree = malloc(sizeof(struct BST));
+    tree->root = NULL;
+
+    for (int i = 1; i < argc; i++) {
+        //int insertVal = atoi(argv[i]);
+        int insertVal = *argv[i];
         insert(tree, insertVal);
     }
 
@@ -125,8 +143,8 @@ int main(int argc, char **argv) {
     printInorder(tree);
     printf("\n");
 
-    for (int i = 1; i < argc; i += 2) {
-        int deleteVal = i;
+    for (int i = 1; i < argc; i ++) {
+        int deleteVal = *argv[i];
         deleteNode(tree->root, deleteVal);
     }
 

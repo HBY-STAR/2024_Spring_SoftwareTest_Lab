@@ -84,7 +84,7 @@ void status() {
 int main() {
     klee_make_symbolic(program, ITERS * sizeof(char), "program");
     maze[y][x] = 'X';
-    read(0, program, ITERS);
+    //read(0, program, ITERS);
 
     while (iter < ITERS) {
         move(program);
@@ -92,7 +92,7 @@ int main() {
         maze[y][x] = 'X';
         draw();
         iter++;
-        sleep(1);
+        //sleep(1);
     }
     lose();
 }
